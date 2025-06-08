@@ -11,20 +11,16 @@ jobs:
   build:
     name: Build LibreTV image
     runs-on: ubuntu-latest
-    if: (github.event.workflow_run.conclusion == 'success' && github.repository == 'LibreSpark/LibreTV') || (github.repository == 'bestZwei/libretv')
+    if: (github.event.workflow_run.conclusion == 'success' && github.repository == 'embyovo/LibreTV') || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
           
-      - name: Set Docker image tag based on repository
+      - name: Set Docker image tag
         id: set-tag
         run: |
-          if [ "${{ github.repository }}" = "LibreSpark/LibreTV" ]; then
-            echo "IMAGE_TAG=libretv:latest" >> $GITHUB_OUTPUT
-          else
-            echo "IMAGE_TAG=libretv-beta:latest" >> $GITHUB_OUTPUT
-          fi
+          echo "IMAGE_TAG=libretv:latest" >> $GITHUB_OUTPUT
 
       - name: Set up Docker QEMU
         uses: docker/setup-qemu-action@v3
@@ -44,5 +40,5 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: "${{ secrets.DOCKER_USERNAME }}/${{ steps.set-tag.outputs.IMAGE_TAG }}"
+          tags: "${{ secrets.DOCKER_USERNAME }}/libretv:latest"
           platforms: linux/amd64,linux/arm64/v8
